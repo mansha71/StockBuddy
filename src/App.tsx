@@ -1,9 +1,17 @@
-import { useEffect } from 'react';
-import { Container, Grid, Typography, Box, CircularProgress } from '@mui/material';
-import { WatchlistProvider, useWatchlist } from './context/WatchlistContext';
-import { SearchBar } from './components/SearchBar';
-import { StockCard } from './components/StockCard';
-import { useStocks } from './hooks/useStocks';
+import { useEffect } from "react";
+import {
+  Container,
+  Grid,
+  Typography,
+  Box,
+  CircularProgress,
+} from "@mui/material";
+import { WatchlistProvider, useWatchlist } from "./context/WatchlistContext";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { StockDetail } from "./components/StockDetail";
+import { SearchBar } from "./components/SearchBar";
+import { StockCard } from "./components/StockCard";
+import { useStocks } from "./hooks/useStocks";
 
 function StockDashboard() {
   const { watchlist } = useWatchlist();
@@ -14,7 +22,7 @@ function StockDashboard() {
       <Typography variant="h3" component="h1" gutterBottom>
         Stock Tracker Dashboard
       </Typography>
-      
+
       <SearchBar />
 
       {loading ? (
@@ -42,9 +50,14 @@ function StockDashboard() {
 
 function App() {
   return (
-    <WatchlistProvider>
-      <StockDashboard />
-    </WatchlistProvider>
+    <BrowserRouter>
+      <WatchlistProvider>
+        <Routes>
+          <Route path="/" element={<StockDashboard />} />
+          <Route path="/stock/:symbol" element={<StockDetail />} />
+        </Routes>
+      </WatchlistProvider>
+    </BrowserRouter>
   );
 }
 

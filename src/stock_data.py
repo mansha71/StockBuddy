@@ -55,6 +55,6 @@ def export_to_json(data, filename):
 
 
 for ticker in get_stock_ticker_list():
-    stock_data = fetch_stock_data(ticker, '2020-01-01', '2023-10-01')
+    stock_data = fetch_stock_data(ticker, '2020-01-01', '2025-06-08')
     export_to_json(stock_data, f"./src/assets/StockDetailData/{ticker}_data.json")
     print(f"Fetched and exported data for {ticker}")

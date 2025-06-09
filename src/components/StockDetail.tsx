@@ -8,6 +8,8 @@ import {
   IconButton,
   Container,
   CircularProgress,
+  ToggleButtonGroup,
+  ToggleButton,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import {
@@ -21,7 +23,12 @@ import {
 } from "recharts";
 import { type LocalStockData, getLocalStockData } from "../utils/stockData";
 
+// Add these before the component
+type TimeRange = "3M" | "1Y" | "3Y" | "all";
+
 export const StockDetail: React.FC = () => {
+  // Add these inside the component, after the existing state declarations
+  const [timeRangeDetail, setTimeRangeDetail] = useState<TimeRange>("all");
   const { symbol = "" } = useParams<{ symbol: string }>();
   const navigate = useNavigate();
   const [data, setData] = useState<LocalStockData[]>([]);
@@ -77,6 +84,23 @@ export const StockDetail: React.FC = () => {
   const priceChangePercent = (priceChange / previousData.close) * 100;
   const isPositive = priceChange >= 0;
 
+  // (Moved inside the StockDetail component, just before the return statement)
+  const filterDataByTimeRange = (data: LocalStockData[]): LocalStockData[] => {
+    const now = new Date();
+    const ranges: Record<TimeRange, number> = {
+      "3M": 90,
+      "1Y": 365,
+      "3Y": 365 * 3,
+      all: 365 * 100, // 100 years for "all"
+    };
+
+    const daysToSubtract = ranges[timeRangeDetail as TimeRange];
+    const startDate = new Date();
+    startDate.setDate(now.getDate() - daysToSubtract);
+
+    return data.filter((item) => new Date(item.date) >= startDate);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <IconButton onClick={() => navigate(-1)} sx={{ mb: 2 }} aria-label="back">
@@ -117,9 +141,46 @@ export const StockDetail: React.FC = () => {
             </Typography>
           </Box>
 
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+            <ToggleButtonGroup
+              value={timeRangeDetail}
+              exclusive
+              onChange={(_, newRange) =>
+                newRange && setTimeRangeDetail(newRange)
+              }
+              size="small"
+              aria-label="time range"
+              sx={{
+                "& .MuiToggleButton-root": {
+                  px: 2,
+                  "&.Mui-selected": {
+                    backgroundColor: "primary.main",
+                    color: "primary.contrastText",
+                    "&:hover": {
+                      backgroundColor: "primary.dark",
+                    },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="3M" aria-label="three months">
+                3M
+              </ToggleButton>
+              <ToggleButton value="1Y" aria-label="one year">
+                1Y
+              </ToggleButton>
+              <ToggleButton value="3Y" aria-label="three years">
+                3Y
+              </ToggleButton>
+              <ToggleButton value="all" aria-label="all time">
+                All
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
           <Box sx={{ height: 400, mb: 3 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
+              <LineChart data={filterDataByTimeRange(data)}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="date"

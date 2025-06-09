@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Imagine you are a senior front-end software engineer tasked with creating a stock visualization tool. Here are the main features you are supposed to implement:
+- A React front-end that displays the top 10 daily trending stocks by default from the AlphaVantage API
+- A watch list feature to allow users to favourite different stocks
+- Lastly, a graph visualization to show the stock price over the course of the day
+Your solution is to be clean and elegant, focus on modular and concise code

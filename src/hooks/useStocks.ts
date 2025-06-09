@@ -12,14 +12,11 @@ export const useStocks = (initialSymbols: string[] = ['AAPL', 'MSFT', 'GOOGL']) 
       setLoading(true);
       setError('');
 
-      // Fetch stocks sequentially to avoid rate limiting
       const stockData: StockData[] = [];
       for (const symbol of symbols) {
         try {
           const data = await fetchStockQuote(symbol);
           stockData.push(data);
-          // Add a small delay between requests to avoid rate limiting
-          await new Promise(resolve => setTimeout(resolve, 1000));
         } catch (err) {
           console.error(`Error fetching ${symbol}:`, err);
           // Continue with other symbols even if one fails
@@ -27,7 +24,7 @@ export const useStocks = (initialSymbols: string[] = ['AAPL', 'MSFT', 'GOOGL']) 
       }
 
       if (stockData.length === 0) {
-        setError('Failed to fetch any stock data. Please check your API key and try again.');
+        setError('Failed to fetch any stock data. Please check if the stock data files exist.');
       } else {
         setStocks(stockData);
       }

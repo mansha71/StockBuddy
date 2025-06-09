@@ -14,6 +14,7 @@ def fetch_stock_data(ticker, start_date, end_date):
     pandas.DataFrame: DataFrame containing stock data.
     """
     stock_data = yf.download(ticker, start=start_date, end=end_date)
+    stock_data.columns = ['open', 'high', 'low', 'close', 'volume']
     return stock_data
 
 def get_stock_ticker_list():
@@ -36,8 +37,22 @@ def export_to_json(data, filename):
     data (pandas.DataFrame): DataFrame to export.
     filename (str): Name of the output JSON file.
     """
-    data.to_json(filename, orient='records', date_format='iso')
+    json_data = []
+    for index, row in data.iterrows():
+        json_data.append({
+            'date': index.strftime('%Y-%m-%d'),
+            'open': float(row['open']),
+            'high': float(row['high']),
+            'low': float(row['low']),
+            'close': float(row['close']),
+            'volume': int(row['volume'])
+        })
+    
+    # Write to JSON file
+    with open(filename, 'w') as f:
+        json.dump(json_data, f, indent=2)
     print(f"Data exported to {filename}")
+
 
 for ticker in get_stock_ticker_list():
     stock_data = fetch_stock_data(ticker, '2020-01-01', '2023-10-01')

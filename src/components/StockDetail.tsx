@@ -101,6 +101,14 @@ export const StockDetail: React.FC = () => {
     return data.filter((item) => new Date(item.date) >= startDate);
   };
 
+  let cutData = filterDataByTimeRange(data);
+  const timeRangeChange =
+    (cutData.at(-1)?.close ?? 0) - (cutData.at(0)?.open ?? 0);
+  const timeRangeChangePercent =
+    (((cutData.at(-1)?.close ?? 0) - (cutData.at(0)?.open ?? 0)) /
+      (cutData.at(0)?.open ?? 1)) *
+    100;
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <IconButton onClick={() => navigate(-1)} sx={{ mb: 2 }} aria-label="back">
@@ -137,7 +145,8 @@ export const StockDetail: React.FC = () => {
           >
             <Typography variant="h6">
               {priceChange > 0 ? "+" : ""}
-              {priceChange.toFixed(2)} ({priceChangePercent.toFixed(2)}%)
+              {timeRangeChange.toFixed(2)} ({timeRangeChangePercent.toFixed(2)}
+              %)
             </Typography>
           </Box>
 
